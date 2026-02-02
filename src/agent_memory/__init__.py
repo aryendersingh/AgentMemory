@@ -45,8 +45,10 @@ from agent_memory.core.memory import MemoryQuery, MemoryRecord, ScoredMemory
 from agent_memory.core.protocols import EmbeddingProvider, StorageBackend
 from agent_memory.core.types import MemoryId, MemoryType
 from agent_memory.embeddings.base import DummyEmbeddingProvider
+from agent_memory.files import ChunkingConfig, FileLoader, FileMetadata
 from agent_memory.memories.conversation import ConversationMemory
 from agent_memory.memories.episodic import EpisodicMemory
+from agent_memory.memories.file import FileMemory
 from agent_memory.memories.long_term import LongTermMemory
 from agent_memory.memories.procedural import ProceduralMemory
 from agent_memory.memories.semantic import SemanticMemory
@@ -77,6 +79,11 @@ __all__ = [
     "EpisodicMemory",
     "SemanticMemory",
     "ProceduralMemory",
+    "FileMemory",
+    # File handling
+    "FileLoader",
+    "FileMetadata",
+    "ChunkingConfig",
     # Backends
     "InMemoryBackend",
     # Embedding providers
