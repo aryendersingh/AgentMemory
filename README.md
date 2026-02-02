@@ -4,7 +4,8 @@ A developer-friendly Python API framework for AI agent memory with pluggable sto
 
 ## Features
 
-- **Multiple Memory Types**: Short-term, long-term, conversation, episodic, semantic, and procedural memory
+- **Multiple Memory Types**: Short-term, long-term, conversation, episodic, semantic, procedural, and file memory
+- **File Indexing**: Add files to memory with automatic chunking and semantic search
 - **Pluggable Backends**: In-memory (included), Redis, PostgreSQL, ChromaDB, Pinecone
 - **Vector Search**: Semantic memory with embedding-based similarity search
 - **Async-First**: All operations are async with sync wrappers available
@@ -20,6 +21,7 @@ pip install agent-memory[redis]
 pip install agent-memory[postgres]
 pip install agent-memory[chroma]
 pip install agent-memory[openai]
+pip install agent-memory[pdf]      # For PDF file support
 pip install agent-memory[all]
 ```
 
@@ -65,6 +67,11 @@ async def main():
             triggers=["rate limit", "429"],
         )
 
+        # File memory (index and search files)
+        await memory.file.add_file("./docs/readme.md", tags=["documentation"])
+        results = await memory.file.search_files("configuration options", limit=5)
+        files = await memory.file.list_files()
+
 asyncio.run(main())
 ```
 
@@ -78,6 +85,7 @@ asyncio.run(main())
 | **Episodic** | Events with temporal context | Optional | Permanent |
 | **Semantic** | Vector-embedded knowledge | None | Permanent |
 | **Procedural** | Learned skills/workflows | None | Permanent |
+| **File** | Indexed file contents with chunking | None | Permanent |
 
 ## API Reference
 
@@ -98,6 +106,7 @@ memory.conversation # ConversationMemory
 memory.episodic     # EpisodicMemory
 memory.semantic     # SemanticMemory (requires embedding provider)
 memory.procedural   # ProceduralMemory
+memory.file         # FileMemory (requires embedding provider)
 ```
 
 ### ShortTermMemory
@@ -171,6 +180,50 @@ await memory.procedural.record_skill(
 )
 skills = await memory.procedural.find_applicable_skills("situation")
 await memory.procedural.record_skill_usage(skill_id, success=True)
+```
+
+### FileMemory
+
+Index and search file contents with automatic chunking.
+
+```python
+# Add a file to memory (reads, chunks, embeds, and stores)
+file_id = await memory.file.add_file("./docs/readme.md", tags=["docs"])
+
+# Search file contents semantically
+results = await memory.file.search_files("configuration options", limit=5)
+
+# Search by filename pattern
+readmes = await memory.file.search_by_filename("*.md")
+
+# List all indexed files
+files = await memory.file.list_files()
+
+# Get all chunks for a file
+chunks = await memory.file.get_file_chunks("./docs/readme.md")
+
+# Update file if changed (hash-based detection)
+await memory.file.update_file("./docs/readme.md")
+
+# Remove a file from memory
+await memory.file.remove_by_path("./docs/readme.md")
+```
+
+#### Chunking Configuration
+
+Control how files are split into chunks:
+
+```python
+from agent_memory import ChunkingConfig
+
+config = ChunkingConfig(
+    chunk_size=1000,      # Max characters per chunk
+    overlap=200,          # Overlapping characters between chunks
+    strategy="character", # "character", "line", or "paragraph"
+    respect_boundaries=True,  # Break at natural boundaries
+)
+
+await memory.file.add_file("large_doc.txt", chunking_config=config)
 ```
 
 ## Configuration
