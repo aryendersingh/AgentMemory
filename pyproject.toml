@@ -30,7 +30,9 @@ postgres = ["asyncpg>=0.29", "pgvector>=0.2"]
 chroma = ["chromadb>=0.4"]
 pinecone = ["pinecone-client>=3.0"]
 openai = ["openai>=1.0"]
-all = ["agent-memory[redis,postgres,chroma,pinecone,openai]"]
+pdf = ["pymupdf>=1.23"]
+files = ["agent-memory[pdf]"]
+all = ["agent-memory[redis,postgres,chroma,pinecone,openai,pdf]"]
 dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.23",

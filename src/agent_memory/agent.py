@@ -14,6 +14,7 @@ from agent_memory.core.protocols import EmbeddingProvider, StorageBackend
 from agent_memory.embeddings.base import DummyEmbeddingProvider
 from agent_memory.memories.conversation import ConversationMemory
 from agent_memory.memories.episodic import EpisodicMemory
+from agent_memory.memories.file import FileMemory
 from agent_memory.memories.long_term import LongTermMemory
 from agent_memory.memories.procedural import ProceduralMemory
 from agent_memory.memories.semantic import SemanticMemory
@@ -88,6 +89,14 @@ class AgentMemory:
         self._semantic: SemanticMemory | None = None
         if self._embedding_provider is not None:
             self._semantic = SemanticMemory(
+                backend=self._backend,
+                agent_id=self._agent_id,
+                embedding_provider=self._embedding_provider,
+            )
+
+        self._file: FileMemory | None = None
+        if self._embedding_provider is not None:
+            self._file = FileMemory(
                 backend=self._backend,
                 agent_id=self._agent_id,
                 embedding_provider=self._embedding_provider,
@@ -213,6 +222,25 @@ class AgentMemory:
         return self._semantic is not None
 
     @property
+    def file(self) -> FileMemory:
+        """Access file memory for indexing and searching file contents.
+
+        Raises:
+            ValueError: If no embedding provider is configured.
+        """
+        if self._file is None:
+            raise ValueError(
+                "File memory requires an embedding provider. "
+                "Configure with embedding_provider='openai' or 'dummy'."
+            )
+        return self._file
+
+    @property
+    def has_file(self) -> bool:
+        """Whether file memory is available."""
+        return self._file is not None
+
+    @property
     def backend(self) -> StorageBackend:
         """The underlying storage backend."""
         return self._backend
@@ -239,6 +267,9 @@ class AgentMemory:
         if self._semantic is not None:
             counts["semantic"] = await self._semantic.clear()
 
+        if self._file is not None:
+            counts["file"] = await self._file.clear()
+
         return counts
 
     async def get_stats(self) -> dict[str, Any]:
@@ -258,6 +289,9 @@ class AgentMemory:
 
         if self._semantic is not None:
             stats["semantic"] = await self._semantic.count()
+
+        if self._file is not None:
+            stats["file"] = await self._file.count()
 
         if hasattr(self._backend, "get_stats"):
             stats["backend"] = await self._backend.get_stats()

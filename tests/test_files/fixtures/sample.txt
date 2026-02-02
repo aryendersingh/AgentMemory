@@ -1,0 +1,13 @@
+This is a sample text file for testing the file memory system.
+
+It contains multiple paragraphs to test chunking functionality.
+The chunker should be able to split this content into multiple chunks
+while respecting natural boundaries like paragraph breaks.
+
+This paragraph discusses configuration options. The memory system
+supports various configuration parameters including chunk size,
+overlap, and chunking strategy. Users can customize these settings
+based on their specific use case.
+
+Finally, this is the last paragraph of the test file. It should be
+included in the final chunk when the file is processed by the loader.
