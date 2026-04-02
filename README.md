@@ -21,7 +21,7 @@ pip install agent-memory[redis]
 pip install agent-memory[postgres]
 pip install agent-memory[chroma]
 pip install agent-memory[openai]
-pip install agent-memory[pdf]      # For PDF file support
+pip install agent-memory[pdf]      
 pip install agent-memory[all]
 ```
 
