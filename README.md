@@ -1,4 +1,4 @@
-# Agent Memory Framework
+# Agent Memory
 
 A developer-friendly Python API framework for AI agent memory with pluggable storage backends, designed for autonomous agents.
 
